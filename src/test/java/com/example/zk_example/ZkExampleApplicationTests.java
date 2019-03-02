@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.example.publish.CsvQueuePublisher;
 import com.example.service.LeaderSelectorExample;
 import com.example.service.NodeCacheExample;
+import com.example.service.lock.InterProcessMutexExample;
 
 import lombok.SneakyThrows;
 
@@ -34,6 +35,9 @@ public class ZkExampleApplicationTests {
 	LeaderSelectorExample leaderSelectorExample;
 	@Autowired
 	NodeCacheExample nodeCacheExample;
+	@Autowired
+	InterProcessMutexExample interProcessMutexExample;
+
 	@SneakyThrows
 	@Test
 	public void contextLoads() {
@@ -47,26 +51,20 @@ public class ZkExampleApplicationTests {
 	@SneakyThrows
 	@Test
 	public void SharedCountTest() {
-		/*for (int i = 0; i < 20; i++) {
-
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-//						sharedCount.trySetCount(i);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}).start();
-			;
-		}
-		Thread.sleep(4000);
-		System.out.println(sharedCount.getCount());
-		Thread.sleep(10000000);*/
+		/*
+		 * for (int i = 0; i < 20; i++) {
+		 * 
+		 * new Thread(new Runnable() {
+		 * 
+		 * @Override public void run() { try { // sharedCount.trySetCount(i); }
+		 * catch (Exception e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } } }).start(); ; } Thread.sleep(4000);
+		 * System.out.println(sharedCount.getCount()); Thread.sleep(10000000);
+		 */
 	}
+
 	ExecutorService service = Executors.newFixedThreadPool(20);
+
 	@SneakyThrows
 	@Test
 	public void sss() {
@@ -77,20 +75,24 @@ public class ZkExampleApplicationTests {
 		service.shutdown();
 		service.awaitTermination(10, TimeUnit.MINUTES);
 	}
+
 	@SneakyThrows
 	@Test
-	public void sssa(){
+	public void sssa() {
 		leaderSelectorExample.start();
 	}
+
 	@SneakyThrows
 	@Test
-	public void bbb(){
+	public void bbb() {
 		nodeCacheExample.start();
 	}
+
 	public class C implements Callable<Void> {
 		DistributedAtomicLong distributedAtomicLong;
+
 		public C(DistributedAtomicLong distributedAtomicLong) {
-			 this.distributedAtomicLong = distributedAtomicLong;
+			this.distributedAtomicLong = distributedAtomicLong;
 		}
 
 		@Override
@@ -109,5 +111,11 @@ public class ZkExampleApplicationTests {
 			}
 			return null;
 		}
+	}
+
+	@SneakyThrows
+	@Test
+	public void startLock() {
+		interProcessMutexExample.start();
 	}
 }
